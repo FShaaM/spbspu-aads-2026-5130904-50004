@@ -26,13 +26,13 @@ int main()
         std::cerr << "Error: invalid number\n";
         return 1;
       }
-      
+
       while (std::cin.peek() == ' ')
       {
         std::cin.get();
       }
     }
-    
+
     if (std::cin.peek() == '\n')
     {
       std::cin.get();
@@ -93,7 +93,7 @@ int main()
         std::cerr << "Overflow\n";
         return 1;
       }
-      
+
       std::cout << " " << *(i->first);
       sum += *(i->first);
       ++(i->first);
