@@ -385,3 +385,74 @@ public:
   bool has_next() const;
   CBIter<T> next() const;
 };
+
+template <class T>
+CBIter<T>& CBIter<T>::operator++()
+{
+  node = node->next;
+  return *this;
+}
+
+template <class T>
+CBIter<T> CBIter<T>::operator++(int)
+{
+  CBIter<T> temp = *this;
+  ++(*this);
+  return temp;
+}
+
+template <class T>
+CBIter<T>& CBIter<T>::operator--()
+{
+  node = node->prev;
+  return *this;
+}
+
+template <class T>
+CBIter<T> CBIter<T>::operator--(int)
+{
+  CBIter<T> temp = *this;
+  --(*this);
+  return temp;
+}
+
+template <class T>
+const T& CBIter<T>::operator*() const
+{
+  return node->val;
+}
+
+template <class T>
+const T* CBIter<T>::operator->() const
+{
+  return &(node->val);
+}
+
+template <class T>
+bool CBIter<T>::operator==(CBIter<T> const& other) const
+{
+  return node == other.node;
+}
+
+template <class T>
+bool CBIter<T>::operator!=(CBIter<T> const& other) const
+{
+  return !(*this == other);
+}
+
+template <class T>
+bool CBIter<T>::has_next() const
+{
+  return node && node->next;
+}
+
+template <class T>
+CBIter<T> CBIter<T>::next() const
+{
+  if (!has_next()) return CBIter<T>();
+  return CBIter<T>(node->next);
+}
+
+} // namespace zinoviev
+
+#endif
