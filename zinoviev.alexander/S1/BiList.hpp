@@ -78,7 +78,7 @@ namespace zinoviev
   {
     for (Node* cur = other.head; cur != nullptr; cur = cur->next)
     {
-      push_back(cur->data);
+      push_back(cur->val);
     }
   }
 
