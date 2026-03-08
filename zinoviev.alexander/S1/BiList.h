@@ -167,3 +167,43 @@ size_t BiList<T>::size() const noexcept
 {
   return this->size_;
 }
+
+template<class T>
+void BiList<T>::swap(BiList& other) noexcept
+{
+  std::swap(head, other.head);
+  std::swap(tail, other.tail);
+  std::swap(size_, other.size_);
+}
+
+template<class T>
+BIter<T> BiList<T>::erase(BIter<T> x) noexcept
+{
+  if (x == end())
+  {
+    return x;
+  }
+
+  Node* node = x.node;
+  Node* pr_node = node->prev;
+  Node* nx_node = node->next;
+
+  if (node == head)
+  {
+    this->pop_front();
+  }
+  else if (node == tail)
+  {
+    this->pop_back();
+  }
+  else
+  {
+    pr_node->next = node->next;
+    nx_node->prev = pr_node;
+
+    delete node;
+    --size_;
+  }
+  return BIter<T>(nx_node);
+}
+
