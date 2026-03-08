@@ -1,6 +1,7 @@
 #include "BiList.hpp"
 #include <iostream>
 #include <string>
+#include <utility>
 
 using namespace zinoviev;
 int main()
@@ -31,4 +32,16 @@ int main()
     std::cout << "0\n";
     return 0;
   }
+
+  CBIter<std::pair<std::string, BiList<int>>> c_iter_outer = outer.cbegin();
+
+  std::cout << c_iter_outer->first;
+  ++c_iter_outer;
+
+  while (c_iter_outer != outer.cend())
+  {
+    std::cout << " " << c_iter_outer->first;
+    ++c_iter_outer;
+  }
+  std::cout << "\n";
 }
