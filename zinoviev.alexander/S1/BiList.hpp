@@ -1,8 +1,8 @@
-#ifndef BILIST_H
-#define BILIST_H
+#ifndef BILIST_HPP
+#define BILIST_HPP
 
 #include <cstddef>
-#include <algorithm>   // для std::swap
+#include <algorithm>
 
 namespace zinoviev
 {
@@ -155,17 +155,8 @@ namespace zinoviev
   template<class T>
   void BiList<T>::clear() noexcept
   {
-    Node* temp = this->head;
-
-    while (this->head)
-    {
-      this->head = this->head->next;
-      delete temp;
-      temp = this->head;
-    }
-
-    this->size_ = 0;
-    this->tail = this->head;
+    while (head != nullptr)
+      pop_front();
   }
 
   template<class T>
