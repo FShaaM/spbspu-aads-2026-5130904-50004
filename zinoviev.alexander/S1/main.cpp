@@ -9,9 +9,7 @@ int main()
 
   BiList<std::pair<std::string, BiList<unsigned long long>>> outer;
   std::string name{};
-  std::string token{};
-
-  std::string max_ull_str = std::to_string(std::numeric_limits<unsigned long long>::max());
+  unsigned long long x = 0;
 
   while (std::cin >> name)
   {
@@ -19,31 +17,9 @@ int main()
 
     while (std::cin.peek() != '\n' && std::cin.peek() != std::char_traits<char>::eof())
     {
-      if (std::cin >> token)
+      if (std::cin >> x)
       {
-        if (token.length() > max_ull_str.length() ||
-            (token.length() == max_ull_str.length() && token > max_ull_str))
-        {
-          std::cout << "\n";
-          std::cerr << "Overflow\n";
-          return 1;
-        }
-
-        try
-        {
-          size_t pos;
-          unsigned long long val = std::stoull(token, &pos);
-          if (pos == token.length())
-          {
-            inner.push_back(val);
-          }
-        }
-        catch (const std::out_of_range&)
-        {
-          std::cout << "\n";
-          std::cerr << "Overflow\n";
-          return 1;
-        }
+        inner.push_back(x);
       }
       else
       {
@@ -100,49 +76,58 @@ int main()
     return 0;
   }
 
-  BIter<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> iter_l_i_inner = list_iter_inner.begin();
   BiList<unsigned long long> list_sum;
-  unsigned long long sum = 0;
 
   while (list_iter_inner.size())
   {
-    std::cout << *(iter_l_i_inner->first);
-    sum = *(iter_l_i_inner->first);
-    ++(iter_l_i_inner->first);
-
-    for (BIter<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> i = ++(list_iter_inner.begin()); i != list_iter_inner.end(); )
+    BiList<unsigned long long> current_row;
+    for (auto it = list_iter_inner.cbegin(); it != list_iter_inner.cend(); ++it)
     {
-      if (sum > std::numeric_limits<unsigned long long>::max() - *(i->first))
+      current_row.push_back(*(it->first));
+    }
+
+    unsigned long long test_sum = 0;
+    bool overflow = false;
+    for (auto it = current_row.cbegin(); it != current_row.cend(); ++it)
+    {
+      if (test_sum > std::numeric_limits<unsigned long long>::max() - *it)
       {
-        std::cout << "\n";
-        std::cerr << "Overflow\n";
-        return 1;
+        overflow = true;
+        break;
       }
+      test_sum += *it;
+    }
 
-      std::cout << " " << *(i->first);
-      sum += *(i->first);
-      ++(i->first);
+    if (overflow)
+    {
+      std::cerr << "Overflow\n";
+      return 1;
+    }
 
-      if (i->first == i->second)
+    bool first_in_row = true;
+    for (auto it = current_row.cbegin(); it != current_row.cend(); ++it)
+    {
+      if (!first_in_row) std::cout << " ";
+      std::cout << *it;
+      first_in_row = false;
+    }
+    std::cout << "\n";
+
+    list_sum.push_back(test_sum);
+
+    auto it = list_iter_inner.begin();
+    while (it != list_iter_inner.end())
+    {
+      ++(it->first);
+      if (it->first == it->second)
       {
-        i = list_iter_inner.erase(i);
+        it = list_iter_inner.erase(it);
       }
       else
       {
-        ++i;
+        ++it;
       }
     }
-
-    std::cout << "\n";
-
-    if (iter_l_i_inner->first == iter_l_i_inner->second)
-    {
-      BIter<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> tmp = iter_l_i_inner;
-      ++iter_l_i_inner;
-      list_iter_inner.erase(tmp);
-    }
-
-    list_sum.push_back(sum);
   }
 
   CBIter<unsigned long long> iter_sum = list_sum.cbegin();
