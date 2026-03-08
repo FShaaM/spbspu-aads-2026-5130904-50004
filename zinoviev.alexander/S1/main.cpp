@@ -108,7 +108,10 @@ int main()
       }
     }
 
-    std::cout << "\n";
+    if (!overflow)
+    {
+      std::cout << "\n";
+    }
 
     if (iter_l_i_inner->first == iter_l_i_inner->second)
     {
