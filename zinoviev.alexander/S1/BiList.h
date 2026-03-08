@@ -63,3 +63,39 @@ public:
   CBIter<T> cbegin() const;
   CBIter<T> cend() const;
 };
+
+template<class T>
+void BiList<T>::push_front(const T& d)
+{
+  Node* newNode = new Node(d);
+  ++size_;
+
+  if (!head)
+  {
+    tail = head = newNode;
+  }
+  else
+  {
+    newNode->next = head;
+    head->prev = newNode;
+    head = newNode;
+  }
+}
+
+template<class T>
+void BiList<T>::push_back(const T& d)
+{
+  Node* newNode = new Node(d);
+  ++size_;
+
+  if (!tail)
+  {
+    tail = head = newNode;
+  }
+  else
+  {
+    newNode->prev = tail;
+    tail->next = newNode;
+    tail = newNode;
+  }
+}
