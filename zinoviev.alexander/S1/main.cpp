@@ -15,30 +15,17 @@ int main()
   {
     BiList<unsigned long long> inner;
 
-    while (std::cin.peek() != '\n' && std::cin.peek() != std::char_traits<char>::eof())
+    while (std::cin >> x)
     {
-      if (std::cin >> x)
-      {
-        inner.push_back(x);
-      }
-      else
-      {
-        std::cerr << "Error: invalid number\n";
-        return 1;
-      }
-
-      while (std::cin.peek() == ' ')
-      {
-        std::cin.get();
-      }
-    }
-
-    if (std::cin.peek() == '\n')
-    {
-      std::cin.get();
+      inner.push_back(x);
     }
 
     outer.push_back(std::make_pair(name, std::move(inner)));
+
+    if (!std::cin.eof())
+    {
+      std::cin.clear();
+    }
   }
 
   if (outer.size() == 0)
@@ -72,8 +59,8 @@ int main()
 
   if (list_iter_inner.size() == 0)
   {
-    std::cout << "0\n";
-    return 0;
+    std::cerr << "Error: no numbers to sum\n";
+    return 1;
   }
 
   BIter<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> iter_l_i_inner = list_iter_inner.begin();
