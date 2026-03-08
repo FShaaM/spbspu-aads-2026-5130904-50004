@@ -277,3 +277,26 @@ CBIter<T> BiList<T>::cend() const
 {
   return CBIter<T>(nullptr);
 }
+
+// ---------- BIter ----------
+template <class T>
+class BIter
+{
+  typename BiList<T>::Node* node;
+  friend class BiList<T>;
+
+public:
+  BIter() : node(nullptr) {}
+  BIter(typename BiList<T>::Node* n) : node(n) {}
+
+  BIter<T>& operator++();
+  BIter<T>& operator--();
+  BIter<T> operator++(int);
+  T& operator*() const;
+  T* operator->() const;
+  bool operator==(const BIter<T>& x) const;
+  bool operator!=(const BIter<T>& x) const;
+
+  bool has_next();
+  BIter<T> next();
+};
