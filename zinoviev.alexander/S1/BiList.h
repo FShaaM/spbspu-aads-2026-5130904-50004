@@ -65,6 +65,52 @@ public:
 };
 
 template<class T>
+BiList<T>::BiList(const BiList<T>& other)
+{
+  BiList tmp;
+  Node* cur = other.head;
+  while (cur)
+  {
+    tmp.push_back(cur->val);
+    cur = cur->next;
+  }
+  swap(tmp);
+}
+
+template<class T>
+BiList<T>::BiList(BiList<T>&& other) noexcept :
+  head(other.head),
+  tail(other.tail),
+  size_(other.size_)
+{
+  other.head = other.tail = nullptr;
+  other.size_ = 0;
+}
+
+template<class T>
+BiList<T>& BiList<T>::operator=(const BiList<T>& other)
+{
+  if (this != &other)
+  {
+    BiList tmp(other);
+    swap(tmp);
+  }
+  return *this;
+}
+
+template<class T>
+BiList<T>& BiList<T>::operator=(BiList<T>&& other) noexcept
+{
+  if (this != &other)
+  {
+    std::swap(head, other.head);
+    std::swap(tail, other.tail);
+    std::swap(size_, other.size_);
+  }
+  return *this;
+}
+
+template<class T>
 void BiList<T>::push_front(const T& d)
 {
   Node* newNode = new Node(d);
