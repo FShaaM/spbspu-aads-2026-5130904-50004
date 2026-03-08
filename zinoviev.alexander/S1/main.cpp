@@ -2,28 +2,27 @@
 #include <iostream>
 #include <string>
 #include <limits>
-#include <climits>
-
-using namespace zinoviev;
 
 int main()
 {
-  BiList<std::pair<std::string, BiList<unsigned long long>>> outer;
-  std::string name;
-  unsigned long long x;
+  using namespace zinoviev;
+
+  BiList<std::pair<std::string, BiList<int>>> outer;
+  std::string name{};
+  unsigned long long x = 0;
 
   while (std::cin >> name)
   {
-    BiList<unsigned long long> inner;
+    BiList<int> inner;
 
     while (std::cin >> x)
     {
-      if (x < 1 || x > INT_MAX)
+      if (x > static_cast<unsigned long long>(std::numeric_limits<int>::max()))
       {
         std::cerr << "Error: number out of range\n";
         return 1;
       }
-      inner.push_back(static_cast<unsigned long long>(x));
+      inner.push_back(static_cast<int>(x));
     }
 
     outer.push_back(std::make_pair(name, std::move(inner)));
@@ -40,7 +39,7 @@ int main()
     return 0;
   }
 
-  CBIter<std::pair<std::string, BiList<unsigned long long>>> c_iter_outer = outer.cbegin();
+  CBIter<std::pair<std::string, BiList<int>>> c_iter_outer = outer.cbegin();
 
   std::cout << c_iter_outer->first;
   ++c_iter_outer;
@@ -52,9 +51,9 @@ int main()
   }
   std::cout << "\n";
 
-  BIter<std::pair<std::string, BiList<unsigned long long>>> iter_outer = outer.begin();
+  BIter<std::pair<std::string, BiList<int>>> iter_outer = outer.begin();
 
-  BiList<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> list_iter_inner;
+  BiList<std::pair<BIter<int>, BIter<int>>> list_iter_inner;
   while (iter_outer != outer.end())
   {
     if (iter_outer->second.size() > 0)
@@ -66,11 +65,11 @@ int main()
 
   if (list_iter_inner.size() == 0)
   {
-    std::cerr << "Error: no numbers to sum\n";
-    return 1;
+    std::cout << "0\n";
+    return 0;
   }
 
-  BIter<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> iter_l_i_inner = list_iter_inner.begin();
+  BIter<std::pair<BIter<int>, BIter<int>>> iter_l_i_inner = list_iter_inner.begin();
 
   BiList<unsigned long long> list_sum;
   unsigned long long sum = 0;
@@ -84,7 +83,7 @@ int main()
 
     ++(iter_l_i_inner->first);
 
-    for (BIter<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> i = ++(list_iter_inner.begin()); i != list_iter_inner.end(); )
+    for (BIter<std::pair<BIter<int>, BIter<int>>> i = ++(list_iter_inner.begin()); i != list_iter_inner.end(); )
     {
       std::cout << " " << *(i->first);
 
@@ -111,7 +110,7 @@ int main()
 
     if (iter_l_i_inner->first == iter_l_i_inner->second)
     {
-      BIter<std::pair<BIter<unsigned long long>, BIter<unsigned long long>>> tmp = iter_l_i_inner;
+      BIter<std::pair<BIter<int>, BIter<int>>> tmp = iter_l_i_inner;
       ++iter_l_i_inner;
       list_iter_inner.erase(tmp);
     }
@@ -129,6 +128,5 @@ int main()
     std::cout << " " << *iter_sum;
     ++iter_sum;
   }
-
   std::cout << "\n";
 }
