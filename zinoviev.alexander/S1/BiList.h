@@ -99,3 +99,71 @@ void BiList<T>::push_back(const T& d)
     tail = newNode;
   }
 }
+
+template<class T>
+void BiList<T>::clear() noexcept
+{
+  Node* temp = head;
+
+  while (head)
+  {
+    head = head->next;
+    delete temp;
+    temp = head;
+  }
+
+  size_ = 0;
+  tail = head;
+}
+
+template<class T>
+void BiList<T>::pop_front() noexcept
+{
+  if (!head)
+    return;
+
+  Node* temp = head;
+  head = head->next;
+
+  delete temp;
+
+  --size_;
+
+  if (head)
+  {
+    head->prev = nullptr;
+  }
+  else
+  {
+    tail = nullptr;
+  }
+}
+
+template<class T>
+void BiList<T>::pop_back() noexcept
+{
+  if (!tail)
+    return;
+
+  Node* temp = tail;
+  tail = tail->prev;
+
+  delete temp;
+
+  --size_;
+
+  if (tail)
+  {
+    tail->next = nullptr;
+  }
+  else
+  {
+    head = nullptr;
+  }
+}
+
+template<class T>
+size_t BiList<T>::size() const noexcept
+{
+  return this->size_;
+}
