@@ -1,5 +1,5 @@
-#ifndef BILIST_H
-#define BILIST_H
+#ifndef BILIST_HPP
+#define BILIST_HPP
 
 namespace zinoviev
 {
