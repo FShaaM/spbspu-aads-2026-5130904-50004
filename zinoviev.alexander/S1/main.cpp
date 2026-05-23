@@ -1,19 +1,20 @@
 #include "BiList.hpp"
 #include <iostream>
-#include <limits>
 #include <string>
+#include <limits>
 
 int main()
 {
   using namespace zinoviev;
+  using ULL = unsigned long long;
 
-  BiList< std::pair< std::string, BiList< unsigned long long > > > outer;
+  BiList< std::pair< std::string, BiList< ULL > > > outer;
   std::string name{};
-  unsigned long long x = 0;
+  ULL x = 0;
 
   while (std::cin >> name)
   {
-    BiList< unsigned long long > inner;
+    BiList< ULL > inner;
 
     while (std::cin >> x)
     {
@@ -34,7 +35,8 @@ int main()
     return 0;
   }
 
-  CBIter< std::pair< std::string, BiList< unsigned long long > > > c_iter_outer = outer.cbegin();
+  CBIter< std::pair< std::string, BiList< ULL > > > c_iter_outer =
+      outer.cbegin();
   std::cout << c_iter_outer->first;
   ++c_iter_outer;
 
@@ -45,14 +47,17 @@ int main()
   }
   std::cout << "\n";
 
-  BIter< std::pair< std::string, BiList< unsigned long long > > > iter_outer = outer.begin();
-  BiList< std::pair< BIter< unsigned long long >, BIter< unsigned long long > > > list_iter_inner;
+  BIter< std::pair< std::string, BiList< ULL > > > iter_outer =
+      outer.begin();
+  BiList< std::pair< BIter< ULL >, BIter< ULL > > > list_iter_inner;
 
   while (iter_outer != outer.end())
   {
     if (iter_outer->second.size() > 0)
     {
-      list_iter_inner.push_back(std::make_pair(iter_outer->second.begin(), iter_outer->second.end()));
+      list_iter_inner.push_back(
+          std::make_pair(iter_outer->second.begin(), iter_outer->second.end())
+      );
     }
     ++iter_outer;
   }
@@ -63,21 +68,24 @@ int main()
     return 0;
   }
 
-  BIter< std::pair< BIter< unsigned long long >, BIter< unsigned long long > > > iter_l_i_inner = list_iter_inner.begin();
-  BiList< unsigned long long > list_sum;
+  BIter< std::pair< BIter< ULL >, BIter< ULL > > > iter_l_i_inner =
+      list_iter_inner.begin();
+  BiList< ULL > list_sum;
   bool overflow = false;
 
   while (list_iter_inner.size() && !overflow)
   {
     std::cout << *(iter_l_i_inner->first);
-    unsigned long long sum = *(iter_l_i_inner->first);
+    ULL sum = *(iter_l_i_inner->first);
     ++(iter_l_i_inner->first);
 
-    for (BIter< std::pair< BIter< unsigned long long >, BIter< unsigned long long > > > i = ++(list_iter_inner.begin()); i != list_iter_inner.end(); )
+    for (BIter< std::pair< BIter< ULL >, BIter< ULL > > >
+         i = ++(list_iter_inner.begin());
+         i != list_iter_inner.end(); )
     {
       std::cout << " " << *(i->first);
 
-      if (sum > std::numeric_limits< unsigned long long >::max() - *(i->first))
+      if (sum > std::numeric_limits< ULL >::max() - *(i->first))
       {
         overflow = true;
       }
@@ -102,7 +110,8 @@ int main()
 
     if (iter_l_i_inner->first == iter_l_i_inner->second)
     {
-      BIter< std::pair< BIter< unsigned long long >, BIter< unsigned long long > > > tmp = iter_l_i_inner;
+      BIter< std::pair< BIter< ULL >, BIter< ULL > > > tmp =
+          iter_l_i_inner;
       ++iter_l_i_inner;
       list_iter_inner.erase(tmp);
     }
@@ -120,7 +129,7 @@ int main()
     return 1;
   }
 
-  CBIter< unsigned long long > iter_sum = list_sum.cbegin();
+  CBIter< ULL > iter_sum = list_sum.cbegin();
   std::cout << *iter_sum;
   ++iter_sum;
 
