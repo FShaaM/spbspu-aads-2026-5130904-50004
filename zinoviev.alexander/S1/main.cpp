@@ -1,7 +1,7 @@
 #include "BiList.hpp"
 #include <iostream>
-#include <string>
 #include <limits>
+#include <string>
 
 int main()
 {
