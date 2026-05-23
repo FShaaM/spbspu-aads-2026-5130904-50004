@@ -1,5 +1,5 @@
-#ifndef ZINOVIEV_BILIST_HPP
-#define ZINOVIEV_BILIST_HPP
+#ifndef BILIST_HPP
+#define BILIST_HPP
 
 #include <cstddef>
 #include <algorithm>
@@ -11,13 +11,11 @@ namespace zinoviev
   template < class T >
   class BiList
   {
-    using Node = Node< T >;
-
-    Node* head_;
-    Node* tail_;
+    Node< T >* head_;
+    Node< T >* tail_;
     size_t size_;
 
-  public:
+   public:
     friend class BIter< T >;
     friend class CBIter< T >;
 
@@ -32,7 +30,7 @@ namespace zinoviev
       tail_(nullptr),
       size_(0)
     {
-      Node* cur = other.head_;
+      Node< T >* cur = other.head_;
       while (cur)
       {
         push_back(cur->val);
@@ -112,7 +110,7 @@ namespace zinoviev
   template < class T >
   void BiList< T >::push_front(const T& d)
   {
-    Node* newNode = new Node(d);
+    Node< T >* newNode = new Node< T >(d);
     ++size_;
 
     if (!head_)
@@ -130,7 +128,7 @@ namespace zinoviev
   template < class T >
   void BiList< T >::push_back(const T& d)
   {
-    Node* newNode = new Node(d);
+    Node< T >* newNode = new Node< T >(d);
     ++size_;
 
     if (!tail_)
@@ -148,7 +146,7 @@ namespace zinoviev
   template < class T >
   void BiList< T >::clear() noexcept
   {
-    Node* temp = head_;
+    Node< T >* temp = head_;
 
     while (head_)
     {
@@ -169,7 +167,7 @@ namespace zinoviev
       return;
     }
 
-    Node* temp = head_;
+    Node< T >* temp = head_;
     head_ = head_->next;
 
     delete temp;
@@ -194,7 +192,7 @@ namespace zinoviev
       return;
     }
 
-    Node* temp = tail_;
+    Node< T >* temp = tail_;
     tail_ = tail_->prev;
 
     delete temp;
@@ -227,9 +225,9 @@ namespace zinoviev
       return x;
     }
 
-    Node* node = x.node_;
-    Node* pr_node = node->prev;
-    Node* nx_node = node->next;
+    Node< T >* node = x.node_;
+    Node< T >* pr_node = node->prev;
+    Node< T >* nx_node = node->next;
 
     if (node == head_)
     {
@@ -253,4 +251,5 @@ namespace zinoviev
     }
   }
 }
+
 #endif

@@ -1,5 +1,5 @@
-#ifndef ZINOVIEV_ITERATORS_HPP
-#define ZINOVIEV_ITERATORS_HPP
+#ifndef ITERATORS_HPP
+#define ITERATORS_HPP
 
 #include <iterator>
 #include "Node.hpp"
@@ -9,18 +9,17 @@ namespace zinoviev
   template < class T > class BiList;
 
   template < class T >
-  class BIter : public std::iterator< std::bidirectional_iterator_tag, T >
+  class BIter : public std::iterator< std::bidirectional_iterator_tag, T, std::ptrdiff_t, T*, T& >
   {
-    using Node = Node< T >;
-    Node* node_;
+    Node< T >* node_;
     friend class BiList< T >;
 
-  public:
+   public:
     BIter() :
       node_(nullptr)
     {}
 
-    explicit BIter(Node* n) :
+    explicit BIter(Node< T >* n) :
       node_(n)
     {}
 
@@ -72,18 +71,17 @@ namespace zinoviev
   };
 
   template < class T >
-  class CBIter : public std::iterator< std::bidirectional_iterator_tag, const T >
+  class CBIter : public std::iterator< std::bidirectional_iterator_tag, const T, std::ptrdiff_t, const T*, const T& >
   {
-    using Node = Node< T >;
-    const Node* node_;
+    const Node< T >* node_;
     friend class BiList< T >;
 
-  public:
+   public:
     CBIter() :
       node_(nullptr)
     {}
 
-    explicit CBIter(const Node* n) :
+    explicit CBIter(const Node< T >* n) :
       node_(n)
     {}
 
@@ -138,4 +136,5 @@ namespace zinoviev
     }
   };
 }
+
 #endif

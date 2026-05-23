@@ -1,5 +1,5 @@
-#ifndef ZINOVIEV_NODE_HPP
-#define ZINOVIEV_NODE_HPP
+#ifndef NODE_HPP
+#define NODE_HPP
 
 namespace zinoviev
 {
@@ -20,7 +20,7 @@ namespace zinoviev
       next(nullptr),
       prev(nullptr)
     {}
-};
-
+  };
 }
+
 #endif
