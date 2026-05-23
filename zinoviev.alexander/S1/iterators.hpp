@@ -7,12 +7,14 @@
 namespace zinoviev
 {
   template < class T > class BiList;
+  template < class T > class CBIter;
 
   template < class T >
   class BIter : public std::iterator< std::bidirectional_iterator_tag, T, std::ptrdiff_t, T*, T& >
   {
     Node< T >* node_;
     friend class BiList< T >;
+    friend class CBIter< T >;
 
    public:
     BIter() :
