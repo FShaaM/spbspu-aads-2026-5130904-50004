@@ -24,6 +24,33 @@ namespace zinoviev
     return tokens;
   }
 
+  void printHelp(std::ostream& out)
+  {
+    out << "Available commands:\n";
+    out << "  create <name>                                     - create a new collection\n";
+    out << "  use <name>                                        - switch to an existing collection\n";
+    out << "  list                                              - list all collections (active marked with *)\n";
+    out << "  drop <name>                                       - delete a collection\n";
+    out << "  add <id> <name> <type> <rarity> <price> <power>   - add a card to current collection\n";
+    out << "  remove <id>                                       - remove a card by id from current collection\n";
+    out << "  card <id>                                         - show card info\n";
+    out << "  filter <type>                                     - show cards of given type\n";
+    out << "  cards                                             - show all cards in current collection\n";
+    out << "  save <filename>                                   - save current collection to file\n";
+    out << "  load <filename>                                   - load cards from file into current collection\n";
+    out << "  create_set_to_id <name> <id1> <id2> ...           - create a set by explicit ids\n";
+    out << "  create_set_to_type <name> <type>                  - create a set by card type\n";
+    out << "  check_set <name>                                  - check if the set is completed in current collection\n";
+    out << "  upgrade_set <name> <budget> [rarity|power]        - buy missing cards to complete the set\n";
+    out << "  completable_sets <budget> [rarity|power]          - list sets that can be completed within budget\n";
+    out << "  min_cost_for_sets <set1> <set2> ...               - minimum cost to complete several sets together\n";
+    out << "  max_sets <budget> [count|rarity|power]            - maximize sets completed within budget\n";
+    out << "  save_sets <filename>                              - save all sets to file\n";
+    out << "  load_sets <filename>                              - load sets from file\n";
+    out << "  save_all                                          - save both sets and collections to startup files\n";
+    out << "  quit / exit                                       - exit the program\n";
+  }
+
   void processCreate(const Vector< std::string >& tokens,
     RBTree< std::string, Collection >& collections,
     std::ostream& out)
@@ -69,8 +96,9 @@ namespace zinoviev
   {
     for (auto it = collections.cbegin(); it != collections.cend(); ++it)
     {
-      out << it->first;
-      if (it->first == current) out << " *";
+      out << "  " << it->first;
+      if (it->first == current)
+        out << " *";
       out << std::endl;
     }
   }
@@ -552,4 +580,5 @@ namespace zinoviev
         out << "Cannot write collections file.\n";
     }
   }
+
 }

@@ -2,7 +2,9 @@
 #define RBTREE_HPP
 
 #include "Node.hpp"
+#include "Vector.hpp"
 #include "Iterators.hpp"
+#include <iostream>
 
 namespace zinoviev
 {
@@ -27,6 +29,7 @@ namespace zinoviev
 
     NodeBase* findNodeBase(const Key& key);
 
+    void fixNilPointers(NodeBase* x, NodeBase* old_nil, NodeBase* new_nil);
     void clearRecursive(NodeBase* x);
 
   public:
@@ -35,6 +38,8 @@ namespace zinoviev
     friend class CIterator< Key, Value >;
 
     RBTree();
+    RBTree(const RBTree& other);
+    RBTree& operator=(const RBTree& other);
     ~RBTree();
 
     bool empty() const;
@@ -45,6 +50,7 @@ namespace zinoviev
     void erase(const Key& key);
     void erase(Iterator<Key, Value> pos);
     void clear();
+    void swap(RBTree& other) noexcept;
 
     Iterator< Key, Value > begin();
     Iterator< Key, Value > end();
@@ -285,14 +291,43 @@ namespace zinoviev
   }
 
   template<class Key, class Value, class Compare>
+  void RBTree<Key, Value, Compare>::fixNilPointers(NodeBase* x, NodeBase* old_nil, NodeBase* new_nil)
+  {
+    if (x == nullptr || x == old_nil || x == new_nil || x == &header_ || x == &nil_)
+    {
+      return;
+    }
+
+    if (x->left == old_nil)
+    {
+      x->left = new_nil;
+    }
+    else if (x->left != new_nil && x->left != nullptr && x->left != &header_)
+    {
+      fixNilPointers(x->left, old_nil, new_nil);
+    }
+
+    if (x->right == old_nil)
+    {
+      x->right = new_nil;
+    }
+    else if (x->right != new_nil && x->right != nullptr && x->right != &header_)
+    {
+      fixNilPointers(x->right, old_nil, new_nil);
+    }
+  }
+
+
+  template<class Key, class Value, class Compare>
   void RBTree<Key, Value, Compare>::clearRecursive(NodeBase* x)
   {
-    if (x == &nil_ || x == nullptr)
+    if (x == nullptr || x == &nil_ || x == &header_)
       return;
 
-    clearRecursive(x->left);
-    clearRecursive(x->right);
-    delete static_cast<Node< Key, Value >*>(x);
+      clearRecursive(x->left);
+      clearRecursive(x->right);
+      delete static_cast< Node< Key, Value >*>(x);
+
   }
 
   template< class Key, class Value, class Compare>
@@ -305,6 +340,35 @@ namespace zinoviev
     header_.left = header_.right = &header_;
 
     nil_.parent = nil_.left = nil_.right = &nil_;
+  }
+
+  template< class Key, class Value, class Compare >
+  RBTree< Key, Value, Compare >::RBTree(const RBTree& other) :
+    header_(NodeBase(Color::RED)),
+    nil_(NodeBase(Color::BLACK)),
+    comp_(other.comp_),
+    size_(0)
+  {
+    header_.parent = &nil_;
+    header_.left = header_.right = &header_;
+    nil_.parent = nil_.left = nil_.right = &nil_;
+
+    for (auto it = other.cbegin(); it != other.cend(); ++it)
+    {
+      insert(it->first, it->second);
+    }
+  }
+
+  template< class Key, class Value, class Compare >
+  RBTree< Key, Value, Compare >&
+    RBTree< Key, Value, Compare >::operator=(const RBTree& other)
+  {
+    if (this != &other)
+    {
+      RBTree temp(other);
+      this->swap(temp);
+    }
+    return *this;
   }
 
   template< class Key, class Value, class Compare >
@@ -498,6 +562,57 @@ namespace zinoviev
     size_ = 0;
   }
 
+  template<class Key, class Value, class Compare>
+  void RBTree<Key, Value, Compare>::swap(RBTree& other) noexcept
+  {
+    std::swap(comp_, other.comp_);
+    std::swap(size_, other.size_);
+
+    std::swap(header_.parent, other.header_.parent);
+    std::swap(header_.left, other.header_.left);
+    std::swap(header_.right, other.header_.right);
+
+    if (header_.parent != &other.nil_ && header_.parent != nullptr)
+    {
+      header_.parent->parent = &header_;
+    }
+    else
+    {
+      header_.parent = &nil_;
+    }
+
+    if (other.header_.parent != &nil_ && other.header_.parent != nullptr)
+    {
+      other.header_.parent->parent = &other.header_;
+    }
+    else
+    {
+      other.header_.parent = &other.nil_;
+    }
+
+    if (header_.left == &other.header_)
+      header_.left = &header_;
+
+    if (header_.right == &other.header_)
+      header_.right = &header_;
+
+    if (other.header_.left == &header_)
+      other.header_.left = &other.header_;
+
+    if (other.header_.right == &header_)
+      other.header_.right = &other.header_;
+
+    if (header_.parent != &nil_)
+    {
+      fixNilPointers(header_.parent, &other.nil_, &nil_);
+    }
+
+    if (other.header_.parent != &other.nil_)
+    {
+      other.fixNilPointers(other.header_.parent, &nil_, &other.nil_);
+    }
+  }
+
   template< class Key, class Value, class Compare >
   Iterator< Key, Value > RBTree< Key, Value, Compare >::begin()
   {
@@ -522,9 +637,7 @@ namespace zinoviev
   template< class Key, class Value, class Compare >
   CIterator< Key, Value > RBTree< Key, Value, Compare >::cend() const
   {
-    NodeBase* header = header_.parent->parent;
-    CIterator< Key, Value > e(header);
-    return e;
+    return CIterator< Key, Value >(const_cast<NodeBase*>(&header_));
   }
 }
 

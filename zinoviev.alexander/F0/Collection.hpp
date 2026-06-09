@@ -17,6 +17,11 @@ namespace zinoviev
 
   public:
 
+    Collection() = default;
+    Collection(const Collection& other);
+    Collection(Collection&& other) noexcept;
+    Collection& operator=(const Collection& other);
+
     void saveToFile(std::ostream& out) const;
     std::istream& loadFromStream(std::istream& in);
 

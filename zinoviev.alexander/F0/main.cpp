@@ -74,6 +74,8 @@ int main(int argc, char* argv[])
     }
   }
 
+  std::cout << "write 'help' to view the commands\n";
+
   std::string line;
   while (std::getline(std::cin, line))
   {
@@ -84,7 +86,9 @@ int main(int argc, char* argv[])
       continue;
     const std::string& cmd = tokens[0];
 
-    if (cmd == "quit" || cmd == "exit")
+    if (cmd == "help")
+      printHelp(std::cout);
+    else if (cmd == "quit" || cmd == "exit")
       break;
     else if (cmd == "create")
       processCreate(tokens, collections, std::cout);
@@ -157,3 +161,4 @@ int main(int argc, char* argv[])
     }
   }
 }
+

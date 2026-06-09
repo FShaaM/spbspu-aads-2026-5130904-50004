@@ -11,8 +11,14 @@
 namespace zinoviev
 {
   template < class T >
-  struct Vector
+  class Vector
   {
+    T* data_;
+    size_t size_;
+    size_t capacity_;
+
+  public:
+
     Vector();
     ~Vector();
     Vector(const Vector< T >& r);
@@ -61,11 +67,6 @@ namespace zinoviev
 
     VectorIterator< T > erase(VectorConstIterator< T > pos);
     VectorIterator< T > erase(VectorConstIterator< T > first, VectorConstIterator< T > last);
-
-  private:
-    T* data_;
-    size_t size_;
-    size_t capacity_;
   };
 }
 
@@ -92,8 +93,8 @@ zinoviev::Vector< T >::Vector(size_t size) :
   }
   catch (...)
   {
-    for (; i < size_; ++i)
-      (data_ + i)->~T();
+    for (size_t j; j < i; ++j)
+      (data_ + j)->~T();
 
     ::operator delete[](data_);
     throw;
@@ -153,6 +154,7 @@ zinoviev::Vector< T >::Vector(Vector< T >&& rhs) noexcept :
   capacity_(rhs.capacity_)
 {
   rhs.data_ = nullptr;
+  rhs.capacity_ = rhs.size_ = 0;
 }
 
 template < class T >
@@ -271,7 +273,8 @@ void zinoviev::Vector< T >::push_back(const T& x)
 template < class T >
 void zinoviev::Vector< T >::pushBackRepeat(const T& x, size_t k)
 {
-  if (k == 0) return;
+  if (k == 0)
+    return;
 
   size_t new_size = size_ + k;
   reserve(new_size);

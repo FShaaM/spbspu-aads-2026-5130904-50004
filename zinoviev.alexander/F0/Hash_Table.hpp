@@ -206,7 +206,7 @@ namespace zinoviev
     HashTable< Key, Value, Hash, Equal >::begin() noexcept
   {
     size_t id = 0;
-    while (id < slots_.getSize() && !slots_[id].occupied)
+    while (id < slots_.size() && !slots_[id].occupied)
       ++id;
     return HashTableIterator< Key, Value, Hash, Equal >(this, id);
   }

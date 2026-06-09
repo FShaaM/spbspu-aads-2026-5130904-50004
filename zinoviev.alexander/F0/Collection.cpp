@@ -7,6 +7,28 @@
 
 namespace zinoviev
 {
+  Collection::Collection(const Collection& other) :
+    cards_(other.cards_),
+    typeIndex_(other.typeIndex_)
+  {
+  }
+
+  Collection::Collection(Collection&& other) noexcept :
+    cards_(std::move(other.cards_)),
+    typeIndex_(std::move(other.typeIndex_))
+  {
+  }
+
+  Collection& Collection::operator=(const Collection& other)
+  {
+    if (this != &other)
+    {
+      cards_ = other.cards_;
+      typeIndex_ = other.typeIndex_;
+    }
+    return *this;
+  }
+
   void Collection::saveToFile(std::ostream& out) const
   {
     for (auto it = cards_.cbegin(); it != cards_.cend(); ++it)

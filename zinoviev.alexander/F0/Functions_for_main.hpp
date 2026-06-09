@@ -13,6 +13,8 @@ namespace zinoviev
 {
   Vector<std::string> splitLine(const std::string& line);
 
+  void printHelp(std::ostream& out);
+
   void processCreate(const Vector< std::string >& tokens,
     RBTree< std::string, Collection >& collections,
     std::ostream& out);
