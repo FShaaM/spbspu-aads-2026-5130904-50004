@@ -1,7 +1,7 @@
-#include "BiList.hpp"
 #include <iostream>
 #include <string>
 #include <limits>
+#include "BiList.hpp"
 
 int main()
 {
@@ -35,59 +35,59 @@ int main()
     return 0;
   }
 
-  CBIter< std::pair< std::string, BiList< ULL > > > c_iter_outer =
+  CBIter< std::pair< std::string, BiList< ULL > > > cItOuter =
       outer.cbegin();
-  std::cout << c_iter_outer->first;
-  ++c_iter_outer;
+  std::cout << cItOuter->first;
+  ++cItOuter;
 
-  while (c_iter_outer != outer.cend())
+  for (; cItOuter != outer.cend(); ++cItOuter)
   {
-    std::cout << " " << c_iter_outer->first;
-    ++c_iter_outer;
+    std::cout << " " << cItOuter->first;
   }
   std::cout << "\n";
 
-  BIter< std::pair< std::string, BiList< ULL > > > iter_outer =
+  BIter< std::pair< std::string, BiList< ULL > > > itOuter =
       outer.begin();
-  BiList< std::pair< BIter< ULL >, BIter< ULL > > > list_iter_inner;
+  BiList< std::pair< BIter< ULL >, BIter< ULL > > > pairList;
 
-  while (iter_outer != outer.end())
+  while (itOuter != outer.end())
   {
-    if (iter_outer->second.size() > 0)
+    if (itOuter->second.size() > 0)
     {
-      list_iter_inner.push_back(
-          std::make_pair(iter_outer->second.begin(), iter_outer->second.end())
+      pairList.push_back(
+          std::make_pair(itOuter->second.begin(), itOuter->second.end())
       );
     }
-    ++iter_outer;
+    ++itOuter;
   }
 
-  if (list_iter_inner.size() == 0)
+  if (pairList.size() == 0)
   {
     std::cout << "0\n";
     return 0;
   }
 
-  BIter< std::pair< BIter< ULL >, BIter< ULL > > > iter_l_i_inner =
-      list_iter_inner.begin();
-  BiList< ULL > list_sum;
-  bool overflow = false;
+  BIter< std::pair< BIter< ULL >, BIter< ULL > > > itPair =
+      pairList.begin();
+  BiList< ULL > listSum;
 
-  while (list_iter_inner.size() && !overflow)
+  while (pairList.size())
   {
-    std::cout << *(iter_l_i_inner->first);
-    ULL sum = *(iter_l_i_inner->first);
-    ++(iter_l_i_inner->first);
+    std::cout << *(itPair->first);
+    ULL sum = *(itPair->first);
+    ++(itPair->first);
 
     for (BIter< std::pair< BIter< ULL >, BIter< ULL > > >
-         i = ++(list_iter_inner.begin());
-         i != list_iter_inner.end(); )
+        i = ++(pairList.begin());
+        i != pairList.end(); )
     {
       std::cout << " " << *(i->first);
 
       if (sum > std::numeric_limits< ULL >::max() - *(i->first))
       {
-        overflow = true;
+        std::cout << "\n";
+        std::cerr << "Overflow\n";
+        return 1;
       }
 
       sum += *(i->first);
@@ -95,7 +95,7 @@ int main()
 
       if (i->first == i->second)
       {
-        i = list_iter_inner.erase(i);
+        i = pairList.erase(i);
       }
       else
       {
@@ -103,42 +103,26 @@ int main()
       }
     }
 
-    if (!overflow)
-    {
-      std::cout << "\n";
-    }
+    std::cout << "\n";
+    listSum.push_back(sum);
 
-    if (iter_l_i_inner->first == iter_l_i_inner->second)
+    if (itPair->first == itPair->second)
     {
       BIter< std::pair< BIter< ULL >, BIter< ULL > > > tmp =
-          iter_l_i_inner;
-      ++iter_l_i_inner;
-      list_iter_inner.erase(tmp);
-    }
-
-    if (!overflow)
-    {
-      list_sum.push_back(sum);
+          itPair;
+      ++itPair;
+      pairList.erase(tmp);
     }
   }
 
-  if (overflow)
-  {
-    std::cout << "\n";
-    std::cerr << "Overflow\n";
-    return 1;
-  }
+  CBIter< ULL > iterSum = listSum.cbegin();
+  std::cout << *iterSum;
+  ++iterSum;
 
-  CBIter< ULL > iter_sum = list_sum.cbegin();
-  std::cout << *iter_sum;
-  ++iter_sum;
-
-  while (iter_sum != list_sum.cend())
+  while (iterSum != listSum.cend())
   {
-    std::cout << " " << *iter_sum;
-    ++iter_sum;
+    std::cout << " " << *iterSum;
+    ++iterSum;
   }
   std::cout << "\n";
-
-  return 0;
 }

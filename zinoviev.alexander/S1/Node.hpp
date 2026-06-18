@@ -3,24 +3,31 @@
 
 namespace zinoviev
 {
-  template < class T >
+  template< class T >
   struct Node
   {
     T val;
     Node* next;
     Node* prev;
 
-    Node() :
-      next(nullptr),
-      prev(nullptr)
-    {}
-
-    Node(const T& value) :
-      val(value),
-      next(nullptr),
-      prev(nullptr)
-    {}
+    Node();
+    Node(const T& value);
   };
+
+  template< class T >
+  Node< T >::Node():
+    val(),
+    next(nullptr),
+    prev(nullptr)
+  {}
+
+  template< class T >
+  Node< T >::Node(const T& value):
+    val(value),
+    next(nullptr),
+    prev(nullptr)
+  {}
+
 }
 
 #endif
