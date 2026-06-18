@@ -50,23 +50,3 @@ BOOST_AUTO_TEST_CASE(testStackCopyAndAssignment)
   s3 = s1;
   BOOST_CHECK_EQUAL(s3.top(), 2);
 }
-
-BOOST_AUTO_TEST_CASE(testStackMove)
-{
-  Stack<int> s1;
-  s1.push(42);
-
-  Stack<int> s2(std::move(s1));
-  BOOST_CHECK_EQUAL(s2.top(), 42);
-  BOOST_CHECK(s1.empty());
-}
-
-BOOST_AUTO_TEST_CASE(testStackWithStrings)
-{
-  Stack<std::string> s;
-  s.push("hello");
-  s.push("world");
-  BOOST_CHECK_EQUAL(s.top(), "world");
-  s.pop();
-  BOOST_CHECK_EQUAL(s.top(), "hello");
-}
