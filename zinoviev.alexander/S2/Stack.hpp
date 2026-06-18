@@ -1,51 +1,67 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
-#include "../S1/BiList.hpp"
 #include <stdexcept>
+#include "../S1/BiList.hpp"
 
 namespace zinoviev
 {
-  template <typename T>
+  template< class T >
   class Stack
   {
-    BiList<T> data_;
-
   public:
     Stack() = default;
 
-    void push(const T& value)
-    {
-      data_.push_front(value);
-    }
+    void push(const T& value);
+    void push(T&& value);
+    void pop();
+    const T& top() const;
+    bool empty() const noexcept;
+    size_t size() const noexcept;
 
-    void push(T&& value)
-    {
-      data_.push_front(std::move(value));
-    }
-
-    void pop()
-    {
-      data_.pop_front();
-    }
-
-    const T& top() const
-    {
-      if (empty())
-        throw std::logic_error("Stack is empty");
-      return *data_.cbegin();
-    }
-
-    bool empty() const noexcept
-    {
-      return data_.size() == 0;
-    }
-
-    size_t size() const noexcept
-    {
-      return data_.size();
-    }
+  private:
+    BiList< T > data_;
   };
+
+  template< class T >
+  void Stack< T >::push(const T& value)
+  {
+    data_.push_front(value);
+  }
+
+  template< class T >
+  void Stack< T >::push(T&& value)
+  {
+    data_.push_front(std::move(value));
+  }
+
+  template< class T >
+  void Stack< T >::pop()
+  {
+    data_.pop_front();
+  }
+
+  template< class T >
+  const T& Stack< T >::top() const
+  {
+    if (empty())
+    {
+      throw std::logic_error("Stack is empty");
+    }
+    return *data_.cbegin();
+  }
+
+  template< class T >
+  bool Stack< T >::empty() const noexcept
+  {
+    return data_.size() == 0;
+  }
+
+  template< class T >
+  size_t Stack< T >::size() const noexcept
+  {
+    return data_.size();
+  }
 }
 
 #endif

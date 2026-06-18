@@ -1,15 +1,15 @@
-#include "evaluate.hpp"
-#include "Stack.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "evaluate.hpp"
+#include "Stack.hpp"
 
 int main(int argc, char* argv[])
 {
   using namespace zinoviev;
 
   std::ifstream input;
-  std::istream* in = &std::cin;
+  std::istream& in = (argc == 2) ? input : std::cin;
 
   if (argc == 2)
   {
@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
       std::cerr << "Cannot open file\n";
       return 1;
     }
-    in = &input;
   }
   else if (argc > 2)
   {
@@ -27,10 +26,10 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  Stack<long long> results;
+  Stack< long long > results;
   std::string line;
 
-  while (std::getline(*in, line))
+  while (std::getline(in, line))
   {
     if (!line.empty())
     {
