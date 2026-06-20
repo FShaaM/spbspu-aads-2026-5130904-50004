@@ -379,6 +379,4 @@ int main(int argc, const char* argv[])
       std::cout << "<INVALID COMMAND>\n";
     }
   }
-
-  return 0;
 }
