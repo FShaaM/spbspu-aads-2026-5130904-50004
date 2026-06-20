@@ -6,9 +6,12 @@
 #include "hash_table.hpp"
 #include "commands.hpp"
 
-using GraphTable = zinoviev::HashTable<std::string, zinoviev::Graph, zinoviev::StringHasher, std::equal_to<std::string>>;
+using GraphTable = zinoviev::HashTable< std::string,
+                                        zinoviev::Graph,
+                                        zinoviev::StringHasher,
+                                        std::equal_to< std::string > >;
 
-int main(int argc,const char* argv[])
+int main(int argc, const char* argv[])
 {
   if (argc != 2)
   {
@@ -29,12 +32,14 @@ int main(int argc,const char* argv[])
   while (std::getline(file, line))
   {
     if (line.empty())
+    {
       continue;
+    }
 
-    size_t pos = line.find(' ');
-    std::string graph_name = line.substr(0, pos);
-    std::string count_str = line.substr(pos + 1);
-    unsigned long long edges_count = std::stoull(count_str);
+    const size_t pos = line.find(' ');
+    const std::string graph_name = line.substr(0, pos);
+    const std::string count_str = line.substr(pos + 1);
+    const unsigned long long edges_count = std::stoull(count_str);
 
     zinoviev::Graph new_graph(graph_name);
 
@@ -42,17 +47,19 @@ int main(int argc,const char* argv[])
     while (!file.eof() && read_edges < edges_count && std::getline(file, line))
     {
       if (line.empty())
+      {
         continue;
+      }
 
-      size_t first_space = line.find(' ');
-      std::string from = line.substr(0, first_space);
-      std::string rest = line.substr(first_space + 1);
+      const size_t first_space = line.find(' ');
+      const std::string from = line.substr(0, first_space);
+      const std::string rest = line.substr(first_space + 1);
 
-      size_t second_space = rest.find(' ');
-      std::string to = rest.substr(0, second_space);
-      std::string weight_str = rest.substr(second_space + 1);
+      const size_t second_space = rest.find(' ');
+      const std::string to = rest.substr(0, second_space);
+      const std::string weight_str = rest.substr(second_space + 1);
 
-      unsigned long long weight = std::stoull(weight_str);
+      const unsigned long long weight = std::stoull(weight_str);
 
       new_graph.add_edge(from, to, weight);
       ++read_edges;
@@ -73,12 +80,16 @@ int main(int argc,const char* argv[])
   while (std::getline(std::cin, cmd_line))
   {
     if (cmd_line.empty())
+    {
       continue;
+    }
 
-    zinoviev::Vector<std::string> tokens = zinoviev::split(cmd_line);
+    zinoviev::Vector< std::string > tokens = zinoviev::split(cmd_line);
 
     if (tokens.is_empty())
+    {
       continue;
+    }
 
     const std::string& command = tokens[0];
 
@@ -90,8 +101,8 @@ int main(int argc,const char* argv[])
         continue;
       }
 
-      auto cbegin = graphs.cbegin();
-      auto cend = graphs.cend();
+      const auto cbegin = graphs.cbegin();
+      const auto cend = graphs.cend();
       zinoviev::print_name_graphs(std::cout, cbegin, cend);
     }
     else if (command == "vertexes")
@@ -109,10 +120,13 @@ int main(int argc,const char* argv[])
         continue;
       }
 
-      zinoviev::Vector<std::string> vertices = g->get_vertices();
+      const zinoviev::Vector< std::string > vertices = g->get_vertices();
+      const size_t count = vertices.getSize();
 
-      for (size_t i = 0; i < vertices.getSize(); ++i)
+      for (size_t i = 0; i < count; ++i)
+      {
         std::cout << vertices[i] << '\n';
+      }
     }
     else if (command == "outbound" || command == "inbound")
     {
@@ -129,17 +143,23 @@ int main(int argc,const char* argv[])
         continue;
       }
 
-      zinoviev::Vector < std::pair<std::string, zinoviev::Vector<unsigned long long>>> v;
+      zinoviev::Vector< std::pair< std::string, zinoviev::Vector< unsigned long long > > > v;
 
       if (command == "outbound")
+      {
         v = g->get_outbound(tokens[2]);
+      }
       else
+      {
         v = g->get_inbound(tokens[2]);
+      }
 
-      for (size_t i = 0; i < v.getSize(); ++i)
+      const size_t v_count = v.getSize();
+      for (size_t i = 0; i < v_count; ++i)
       {
         std::cout << v[i].first;
-        for (size_t j = 0; j < v[i].second.getSize(); ++j)
+        const size_t w_count = v[i].second.getSize();
+        for (size_t j = 0; j < w_count; ++j)
         {
           std::cout << " " << v[i].second[j];
         }
@@ -163,7 +183,7 @@ int main(int argc,const char* argv[])
 
       try
       {
-        unsigned long long weight = std::stoull(tokens[4]);
+        const unsigned long long weight = std::stoull(tokens[4]);
         g->add_edge(tokens[2], tokens[3], weight);
       }
       catch (...)
@@ -189,7 +209,7 @@ int main(int argc,const char* argv[])
 
       try
       {
-        unsigned long long weight = std::stoull(tokens[4]);
+        const unsigned long long weight = std::stoull(tokens[4]);
         g->remove_edge({ tokens[2], tokens[3] }, weight);
       }
       catch (...)
@@ -231,8 +251,11 @@ int main(int argc,const char* argv[])
       try
       {
         zinoviev::Graph new_graph(tokens[1]);
-        for (size_t i = 3; i < tokens.getSize(); ++i)
+        const size_t vert_count = tokens.getSize();
+        for (size_t i = 3; i < vert_count; ++i)
+        {
           new_graph.add_vertex(tokens[i]);
+        }
         graphs.add(tokens[1], new_graph);
       }
       catch (...)
@@ -305,11 +328,13 @@ int main(int argc,const char* argv[])
 
       bool all_exist = true;
       for (size_t i = 0; i < count; ++i)
+      {
         if (!old_g->has_vertex(tokens[4 + i]))
         {
           all_exist = false;
           break;
         }
+      }
 
       if (!all_exist)
       {
@@ -321,16 +346,25 @@ int main(int argc,const char* argv[])
       {
         zinoviev::Graph new_graph(tokens[1]);
         for (size_t i = 0; i < count; ++i)
+        {
           new_graph.add_vertex(tokens[4 + i]);
+        }
 
         for (size_t i = 0; i < count; ++i)
+        {
           for (size_t j = 0; j < count; ++j)
           {
             const auto* weights = old_g->get_weights(tokens[4 + i], tokens[4 + j]);
             if (weights)
-              for (size_t k = 0; k < weights->getSize(); ++k)
+            {
+              const size_t w_count = weights->getSize();
+              for (size_t k = 0; k < w_count; ++k)
+              {
                 new_graph.add_edge(tokens[4 + i], tokens[4 + j], (*weights)[k]);
+              }
+            }
           }
+        }
 
         graphs.add(tokens[1], new_graph);
       }
@@ -341,6 +375,8 @@ int main(int argc,const char* argv[])
       }
     }
     else
+    {
       std::cout << "<INVALID COMMAND>\n";
+    }
   }
 }

@@ -3,6 +3,72 @@
 
 namespace zinoviev
 {
+  namespace
+  {
+    template<class T>
+    void sort(T& v, size_t begin, size_t end)
+    {
+      if (end - begin <= 1)
+      {
+        return;
+      }
+
+      const size_t id = end - 1;
+      T pivot = v[id];
+
+      size_t i = begin;
+      for (size_t j = i; j < end; ++j)
+      {
+        if (v[j] < pivot)
+        {
+          std::swap(v[i], v[j]);
+          ++i;
+        }
+      }
+      std::swap(v[i], v[id]);
+
+      sort(v, begin, i);
+      sort(v, i + 1, end);
+    }
+
+    void sort_pair(Vector< std::pair< std::string, Vector< unsigned long long > > >& p,
+                   size_t begin,
+                   size_t end)
+    {
+      if (end - begin <= 1)
+      {
+        return;
+      }
+
+      const size_t id = end - 1;
+      auto pivot = p[id];
+
+      size_t i = begin;
+      for (size_t j = i; j < end; ++j)
+      {
+        if (p[j].first < pivot.first)
+        {
+          std::swap(p[i], p[j]);
+          ++i;
+        }
+      }
+      std::swap(p[i], p[id]);
+
+      sort_pair(p, begin, i);
+      sort_pair(p, i + 1, end);
+    }
+
+    template<class T>
+    void sortVector(T& v)
+    {
+      sort(v, 0, v.getSize());
+    }
+
+    void sortPair(Vector< std::pair< std::string, Vector< unsigned long long > > >& p)
+    {
+      sort_pair(p, 0, p.getSize());
+    }
+  } // namespace
 
   std::size_t StringHasher::operator()(const std::string& p) const
   {
@@ -11,7 +77,7 @@ namespace zinoviev
     return boost::hash2::get_integral_result(hasher.result());
   }
 
-  std::size_t PairHasher::operator()(const std::pair<std::string, std::string>& p) const
+  std::size_t PairHasher::operator()(const std::pair< std::string, std::string >& p) const
   {
     boost::hash2::sha1_160 hasher;
     boost::hash2::hash_append(hasher, {}, p.first);
@@ -19,75 +85,19 @@ namespace zinoviev
     return boost::hash2::get_integral_result(hasher.result());
   }
 
-  template <class T>
-  void sort(T& v, size_t begin, size_t end)
-  {
-    if (end - begin <= 1)
-      return;
-
-    size_t id = end - 1;
-    T pivot = v[id];
-
-    size_t i = begin;
-    for (size_t j = i; j < end; ++j)
-    {
-      if (v[j] < pivot)
-      {
-        std::swap(v[i], v[j]);
-        ++i;
-      }
-    }
-    std::swap(v[i], v[id]);
-
-    sort(v, begin, i);
-    sort(v, i + 1, end);
-  }
-
-  void sort_pair(Vector<std::pair<std::string, Vector<unsigned long long>>>& p, size_t begin, size_t end)
-  {
-    if (end - begin <= 1)
-      return;
-
-    size_t id = end - 1;
-    auto pivot = p[id];
-
-    size_t i = begin;
-    for (size_t j = i; j < end; ++j)
-    {
-      if (p[j].first < pivot.first)
-      {
-        std::swap(p[i], p[j]);
-        ++i;
-      }
-    }
-    std::swap(p[i], p[id]);
-
-    sort_pair(p, begin, i);
-    sort_pair(p, i + 1, end);
-  }
-
-  template <class T>
-  void sortVector(T& v)
-  {
-    sort(v, 0, v.getSize());
-  }
-
-  void sortPair(Vector<std::pair<std::string, Vector<unsigned long long>>>& p)
-  {
-    sort_pair(p, 0, p.getSize());
-  }
-
-  Graph::Graph(const std::string name) :
+  Graph::Graph(const std::string& name):
     name_(name),
     vertexes_(16, 6, 16),
     edges_(18, 6, 16)
-  {}
+  {
+  }
 
-  Graph::Graph(const Graph& g) :
+  Graph::Graph(const Graph& g):
     name_(g.name_),
     vertexes_(g.vertexes_),
     edges_(g.edges_)
-  {}
+  {
+  }
 
   void Graph::add_vertex(const std::string& v)
   {
@@ -100,15 +110,18 @@ namespace zinoviev
     auto edges_copy = edges_;
 
     auto key = std::make_pair(from, to);
-    Vector<unsigned long long>* existing = edges_copy.find(key);
+    Vector< unsigned long long >* existing = edges_copy.find(key);
 
-    Vector<unsigned long long> new_weights;
-    if (existing) {
+    Vector< unsigned long long > new_weights;
+    if (existing)
+    {
       new_weights = *existing;
       new_weights.push_back(weight);
     }
     else
+    {
       new_weights.push_back(weight);
+    }
 
     vertices_copy.add(from, true);
     vertices_copy.add(to, true);
@@ -124,12 +137,12 @@ namespace zinoviev
     return vertexes_.has(v);
   }
 
-  Vector<std::string> Graph::get_vertices() const
+  Vector< std::string > Graph::get_vertices() const
   {
-    Vector<std::string> tmp;
+    Vector< std::string > tmp;
 
     auto slot_pt = vertexes_.cbegin();
-    auto end = vertexes_.cend();
+    const auto end = vertexes_.cend();
     while (slot_pt != end)
     {
       tmp.push_back((*slot_pt).first);
@@ -140,14 +153,15 @@ namespace zinoviev
     return tmp;
   }
 
-  const Vector<unsigned long long>* Graph::get_weights(const std::string& from, const std::string& to) const
+  const Vector< unsigned long long >* Graph::get_weights(const std::string& from,
+                                                         const std::string& to) const
   {
     return edges_.find({ from, to });
   }
 
   void Graph::swap(Graph& other) noexcept
   {
-    std::swap(this->name_, other.name_);
+    std::swap(name_, other.name_);
     edges_.swap(other.edges_);
     vertexes_.swap(other.vertexes_);
   }
@@ -157,82 +171,111 @@ namespace zinoviev
     return name_;
   }
 
-  Vector<std::pair<std::string, Vector<unsigned long long>>> Graph::get_outbound(const std::string& vertex) const
+  Vector< std::pair< std::string, Vector< unsigned long long > > >
+  Graph::get_outbound(const std::string& vertex) const
   {
-    Vector<std::pair<std::string, Vector<unsigned long long>>> res;
+    Vector< std::pair< std::string, Vector< unsigned long long > > > res;
 
     auto edge = edges_.cbegin();
-    auto end = edges_.cend();
+    const auto end = edges_.cend();
     while (edge != end)
     {
       if ((*edge).first.first == vertex)
+      {
         res.push_back({ (*edge).first.second, (*edge).second });
+      }
       ++edge;
     }
 
     sortPair(res);
-    for (size_t i = 0; i < res.getSize(); ++i)
+    const size_t count = res.getSize();
+    for (size_t i = 0; i < count; ++i)
+    {
       sortVector(res[i].second);
+    }
     return res;
   }
 
-  Vector<std::pair<std::string, Vector<unsigned long long>>> Graph::get_inbound(const std::string& vertex) const
+  Vector< std::pair< std::string, Vector< unsigned long long > > >
+  Graph::get_inbound(const std::string& vertex) const
   {
-    Vector<std::pair<std::string, Vector<unsigned long long>>> res;
+    Vector< std::pair< std::string, Vector< unsigned long long > > > res;
 
     auto edge = edges_.cbegin();
-    auto end = edges_.cend();
+    const auto end = edges_.cend();
     while (edge != end)
     {
       if ((*edge).first.second == vertex)
+      {
         res.push_back({ (*edge).first.first, (*edge).second });
+      }
       ++edge;
     }
 
     sortPair(res);
-    for (size_t i = 0; i < res.getSize(); ++i)
+    const size_t count = res.getSize();
+    for (size_t i = 0; i < count; ++i)
+    {
       sortVector(res[i].second);
+    }
     return res;
   }
 
-  void Graph::remove_edge(const std::pair<std::string, std::string>& p, unsigned long long weight)
+  void Graph::remove_edge(const std::pair< std::string, std::string >& p,
+                          unsigned long long weight)
   {
-    Vector<unsigned long long>* ptr = edges_.find(p);
+    Vector< unsigned long long >* ptr = edges_.find(p);
 
     if (!ptr)
+    {
       throw std::out_of_range("Can't find this edge");
+    }
 
-    size_t id = ptr->getSize();
-    for (size_t i = 0; i < ptr->getSize(); ++i)
+    const size_t size = ptr->getSize();
+    size_t id = size;
+    for (size_t i = 0; i < size; ++i)
+    {
       if (ptr->operator[](i) == weight)
       {
         id = i;
         break;
       }
+    }
 
-    if (id == ptr->getSize())
+    if (id == size)
+    {
       throw std::out_of_range("Can't find this weight");
+    }
 
     ptr->erase(id);
 
     if (ptr->is_empty())
+    {
       edges_.erase(p);
+    }
   }
 
   void Graph::add_graph(const Graph& other)
   {
     Graph tmp(*this);
 
-    Vector<std::string> ver = other.get_vertices();
-    for (size_t i = 0; i < ver.getSize(); ++i)
+    Vector< std::string > ver = other.get_vertices();
+    const size_t ver_count = ver.getSize();
+    for (size_t i = 0; i < ver_count; ++i)
+    {
       tmp.add_vertex(ver[i]);
+    }
 
     auto citer = other.edges_.cbegin();
-    auto cend = other.edges_.cend();
+    const auto cend = other.edges_.cend();
     while (citer != cend)
     {
-      for (size_t i = 0; i < (*citer).second.getSize(); ++i)
-        tmp.add_edge((*citer).first.first, (*citer).first.second, (*citer).second[i]);
+      const Vector< unsigned long long >& weights = (*citer).second;
+      const size_t w_count = weights.getSize();
+      for (size_t i = 0; i < w_count; ++i)
+      {
+        tmp.add_edge((*citer).first.first, (*citer).first.second, weights[i]);
+      }
       ++citer;
     }
 
