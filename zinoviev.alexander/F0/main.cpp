@@ -379,6 +379,16 @@ int main(int argc, char* argv[])
 namespace zinoviev
 {
 
+  std::string getValidMode(const Vector<std::string>& tokens)
+  {
+    if (tokens.size() < 3)
+    {
+      return "count";
+    }
+    const std::string& m = tokens[2];
+    return (m == "count" || m == "rarity" || m == "power") ? m : "count";
+  }
+
   Vector<std::string> splitLine(const std::string& line)
   {
     Vector<std::string> tokens;
@@ -871,12 +881,10 @@ namespace zinoviev
     {
       throw std::runtime_error("Usage: max_sets <budget> [count|rarity|power]");
     }
+
     size_t budget = std::stoull(tokens[1]);
-    std::string mode = (tokens.size() >= 3) ? tokens[2] : "count";
-    if (mode != "count" && mode != "rarity" && mode != "power")
-    {
-      mode = "count";
-    }
+    std::string mode = getValidMode(tokens);
+
     auto it = collections.find(current);
     if (it == collections.cend())
     {

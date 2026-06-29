@@ -87,8 +87,8 @@ namespace zinoviev
   }
 
   void upgradeSet(const std::string& setName, size_t budget, const std::string& criterion,
-      const Collection& collection, const RBTree< size_t, Card >& catalog,
-      const SetCollection& sets, std::ostream& out)
+    const Collection& collection, const RBTree< size_t, Card >& catalog,
+    const SetCollection& sets, std::ostream& out)
   {
     const Vector< size_t >* set_ids = sets.getSet(setName);
     if (!set_ids)
@@ -145,8 +145,8 @@ namespace zinoviev
   }
 
   void completableSets(size_t budget, const std::string& criterion,
-      const Collection& collection, const RBTree< size_t, Card >& catalog,
-      const SetCollection& sets, std::ostream& out)
+    const Collection& collection, const RBTree< size_t, Card >& catalog,
+    const SetCollection& sets, std::ostream& out)
   {
     Vector< std::string > names;
     Vector< size_t > costs;
@@ -211,8 +211,8 @@ namespace zinoviev
   }
 
   void minCostForSets(const Vector< std::string >& setNames,
-      const Collection& collection, const RBTree< size_t, Card >& catalog,
-      const SetCollection& sets, std::ostream& out)
+    const Collection& collection, const RBTree< size_t, Card >& catalog,
+    const SetCollection& sets, std::ostream& out)
   {
     RBTree< size_t, bool > uniqueIds;
 
@@ -271,8 +271,8 @@ namespace zinoviev
   }
 
   void maxSets(size_t budget, const std::string& mode,
-      const Collection& collection, const RBTree< size_t, Card >& catalog,
-      const SetCollection& sets, std::ostream& out)
+    const Collection& collection, const RBTree< size_t, Card >& catalog,
+    const SetCollection& sets, std::ostream& out)
   {
     Vector< std::string > names;
     Vector< size_t > costs;
@@ -388,8 +388,8 @@ namespace zinoviev
   }
 
   void checkSet(const std::string& setName, const Collection& collection,
-      const RBTree< size_t, Card >& catalog, const SetCollection& sets,
-      std::ostream& out)
+    const RBTree< size_t, Card >& catalog, const SetCollection& sets,
+    std::ostream& out)
   {
     const Vector< size_t >* ids = sets.getSet(setName);
     if (!ids)
