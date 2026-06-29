@@ -5,6 +5,7 @@
 
 namespace zinoviev
 {
+
   enum class Color
   {
     RED,
@@ -31,12 +32,12 @@ namespace zinoviev
     Node(Key k, Value val, NodeBase* p, NodeBase* l, NodeBase* r, Color c);
   };
 
-  inline NodeBase::NodeBase(Color c) :
+  inline NodeBase::NodeBase(Color c):
     color(c)
   {
   }
 
-  inline NodeBase::NodeBase(NodeBase* p, NodeBase* l, NodeBase* r, Color c) :
+  inline NodeBase::NodeBase(NodeBase* p, NodeBase* l, NodeBase* r, Color c):
     parent(p),
     left(l),
     right(r),
@@ -45,11 +46,12 @@ namespace zinoviev
   }
 
   template< class Key, class Value >
-  Node< Key, Value >::Node(Key k, Value val, NodeBase* p, NodeBase* l, NodeBase* r, Color c) :
+  Node< Key, Value >::Node(Key k, Value val, NodeBase* p, NodeBase* l, NodeBase* r, Color c):
     NodeBase(p, l, r, c),
     node(std::make_pair(k, val))
   {
   }
+
 }
 
 #endif

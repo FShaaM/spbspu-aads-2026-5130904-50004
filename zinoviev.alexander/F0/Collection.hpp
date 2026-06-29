@@ -12,11 +12,7 @@ namespace zinoviev
 {
   class Collection
   {
-    RBTree< size_t, Card > cards_;
-    HashTable< std::string, Vector< size_t >, std::hash< std::string >, std::equal_to< std::string > > typeIndex_;
-
   public:
-
     Collection() = default;
     Collection(const Collection& other);
     Collection(Collection&& other) noexcept;
@@ -33,6 +29,13 @@ namespace zinoviev
     void updatePrice(size_t id, size_t newPrice);
     Vector< Card > getAllCards() const;
     void saveToStream(std::ostream& out) const;
+
+  private:
+    RBTree< size_t, Card > cards_;
+    HashTable< std::string,
+               Vector< size_t >,
+               std::hash< std::string >,
+               std::equal_to< std::string > > typeIndex_;
   };
 }
 

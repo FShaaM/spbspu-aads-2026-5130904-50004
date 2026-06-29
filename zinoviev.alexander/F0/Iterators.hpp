@@ -5,49 +5,52 @@
 
 namespace zinoviev
 {
+
   template< class Key, class Value, class Compare >
   class RBTree;
 
   template< class Key, class Value >
   class Iterator
   {
-    NodeBase* node_;
-
   public:
-
-    template<class K, class V, class C> friend class RBTree;
+    template< class K, class V, class C >
+    friend class RBTree;
 
     explicit Iterator(NodeBase* n);
 
     std::pair< const Key, Value >& operator*();
     std::pair< const Key, Value >* operator->();
-    bool operator==(Iterator< Key, Value > other);
-    bool operator!=(Iterator< Key, Value > other);
+    bool operator==(Iterator< Key, Value > other) const;
+    bool operator!=(Iterator< Key, Value > other) const;
     Iterator< Key, Value >& operator++();
     Iterator< Key, Value >& operator--();
+
+  private:
+    NodeBase* node_;
   };
 
   template< class Key, class Value >
   class CIterator
   {
-    NodeBase* node_;
-
   public:
-
-    template<class K, class V, class C> friend class RBTree;
+    template< class K, class V, class C >
+    friend class RBTree;
 
     explicit CIterator(NodeBase* n);
 
     const std::pair< const Key, Value >& operator*() const;
     const std::pair< const Key, Value >* operator->() const;
-    bool operator==(CIterator< Key, Value > other);
-    bool operator!=(CIterator< Key, Value > other);
+    bool operator==(CIterator< Key, Value > other) const;
+    bool operator!=(CIterator< Key, Value > other) const;
     CIterator< Key, Value >& operator++();
     CIterator< Key, Value >& operator--();
+
+  private:
+    NodeBase* node_;
   };
 
   template< class Key, class Value >
-  Iterator< Key, Value >::Iterator(NodeBase* n) :
+  Iterator< Key, Value >::Iterator(NodeBase* n):
     node_(n)
   {
   }
@@ -55,23 +58,23 @@ namespace zinoviev
   template< class Key, class Value >
   std::pair< const Key, Value >& Iterator< Key, Value >::operator*()
   {
-    return static_cast<Node< Key, Value >*>(node_)->node;
+    return static_cast< Node< Key, Value >* >(node_)->node;
   }
 
   template< class Key, class Value >
   std::pair< const Key, Value >* Iterator< Key, Value >::operator->()
   {
-    return &(static_cast<Node< Key, Value >*>(node_)->node);
+    return &(static_cast< Node< Key, Value >* >(node_)->node);
   }
 
   template< class Key, class Value >
-  bool Iterator< Key, Value >::operator==(Iterator< Key, Value > other)
+  bool Iterator< Key, Value >::operator==(Iterator< Key, Value > other) const
   {
     return node_ == other.node_;
   }
 
   template< class Key, class Value >
-  bool Iterator< Key, Value >::operator!=(Iterator< Key, Value > other)
+  bool Iterator< Key, Value >::operator!=(Iterator< Key, Value > other) const
   {
     return !(*this == other);
   }
@@ -90,13 +93,17 @@ namespace zinoviev
     };
 
     if (is_header(node_))
+    {
       return *this;
+    }
 
     if (!is_nil(node_->right))
     {
       node_ = node_->right;
       while (!is_nil(node_->left))
+      {
         node_ = node_->left;
+      }
     }
     else
     {
@@ -133,7 +140,9 @@ namespace zinoviev
     {
       node_ = node_->left;
       while (!is_nil(node_->right))
+      {
         node_ = node_->right;
+      }
     }
     else
     {
@@ -150,7 +159,7 @@ namespace zinoviev
   }
 
   template< class Key, class Value >
-  CIterator< Key, Value >::CIterator(NodeBase* n) :
+  CIterator< Key, Value >::CIterator(NodeBase* n):
     node_(n)
   {
   }
@@ -158,23 +167,23 @@ namespace zinoviev
   template< class Key, class Value >
   const std::pair< const Key, Value >& CIterator< Key, Value >::operator*() const
   {
-    return static_cast<Node< Key, Value >*>(node_)->node;
+    return static_cast< Node< Key, Value >* >(node_)->node;
   }
 
   template< class Key, class Value >
   const std::pair< const Key, Value >* CIterator< Key, Value >::operator->() const
   {
-    return &(static_cast<Node< Key, Value >*>(node_)->node);
+    return &(static_cast< Node< Key, Value >* >(node_)->node);
   }
 
   template< class Key, class Value >
-  bool CIterator< Key, Value >::operator==(CIterator< Key, Value > other)
+  bool CIterator< Key, Value >::operator==(CIterator< Key, Value > other) const
   {
     return node_ == other.node_;
   }
 
   template< class Key, class Value >
-  bool CIterator< Key, Value >::operator!=(CIterator< Key, Value > other)
+  bool CIterator< Key, Value >::operator!=(CIterator< Key, Value > other) const
   {
     return !(*this == other);
   }
@@ -193,13 +202,17 @@ namespace zinoviev
     };
 
     if (is_header(node_))
+    {
       return *this;
+    }
 
     if (!is_nil(node_->right))
     {
       node_ = node_->right;
       while (!is_nil(node_->left))
+      {
         node_ = node_->left;
+      }
     }
     else
     {
@@ -236,7 +249,9 @@ namespace zinoviev
     {
       node_ = node_->left;
       while (!is_nil(node_->right))
+      {
         node_ = node_->right;
+      }
     }
     else
     {
@@ -251,6 +266,7 @@ namespace zinoviev
 
     return *this;
   }
+
 }
 
 #endif

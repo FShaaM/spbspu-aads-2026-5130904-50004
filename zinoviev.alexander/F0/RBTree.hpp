@@ -1,10 +1,10 @@
 #ifndef RBTREE_HPP
 #define RBTREE_HPP
 
+#include <iostream>
 #include "Node.hpp"
 #include "Vector.hpp"
 #include "Iterators.hpp"
-#include <iostream>
 
 namespace zinoviev
 {
@@ -15,7 +15,6 @@ namespace zinoviev
     NodeBase header_;
     NodeBase nil_;
     Compare comp_;
-
     size_t size_;
 
     void leftRotate(NodeBase* x);
@@ -33,7 +32,6 @@ namespace zinoviev
     void clearRecursive(NodeBase* x);
 
   public:
-
     friend class Iterator< Key, Value >;
     friend class CIterator< Key, Value >;
 
@@ -65,15 +63,23 @@ namespace zinoviev
     NodeBase* new_x = x->right;
 
     if (father == &header_)
+    {
       father->parent = new_x;
+    }
     else if (father->left == x)
+    {
       father->left = new_x;
+    }
     else
+    {
       father->right = new_x;
+    }
 
     x->right = new_x->left;
     if (new_x->left != &nil_)
+    {
       new_x->left->parent = x;
+    }
     new_x->left = x;
 
     x->parent = new_x;
@@ -87,15 +93,23 @@ namespace zinoviev
     NodeBase* new_x = x->left;
 
     if (father == &header_)
+    {
       father->parent = new_x;
+    }
     else if (father->left == x)
+    {
       father->left = new_x;
+    }
     else
+    {
       father->right = new_x;
+    }
 
     x->left = new_x->right;
     if (new_x->right != &nil_)
+    {
       new_x->right->parent = x;
+    }
     new_x->right = x;
 
     x->parent = new_x;
@@ -118,7 +132,9 @@ namespace zinoviev
         father_is_left = true;
       }
       else
+      {
         uncle = father->parent->left;
+      }
 
       if (uncle->color == Color::RED)
       {
@@ -248,24 +264,36 @@ namespace zinoviev
     NodeBase* father_x = x->parent;
 
     if (father_x == &header_)
+    {
       header_.parent = y;
+    }
     else if (x == father_x->left)
+    {
       father_x->left = y;
+    }
     else
+    {
       father_x->right = y;
+    }
 
     if (y != &nil_)
+    {
       y->parent = father_x;
+    }
   }
 
   template<class Key, class Value, class Compare>
   NodeBase* RBTree<Key, Value, Compare>::minimum(NodeBase* x)
   {
     if (x == &nil_)
+    {
       return &nil_;
+    }
 
     while (x->left != &nil_)
+    {
       x = x->left;
+    }
 
     return x;
   }
@@ -280,11 +308,17 @@ namespace zinoviev
       const Key& curr = static_cast<Node<Key, Value>*>(node)->node.first;
 
       if (!comp_(key, curr) && !comp_(curr, key))
+      {
         return node;
+      }
       else if (comp_(key, curr))
+      {
         node = node->left;
+      }
       else
+      {
         node = node->right;
+      }
     }
 
     return &nil_;
@@ -317,21 +351,21 @@ namespace zinoviev
     }
   }
 
-
   template<class Key, class Value, class Compare>
   void RBTree<Key, Value, Compare>::clearRecursive(NodeBase* x)
   {
     if (x == nullptr || x == &nil_ || x == &header_)
+    {
       return;
+    }
 
-      clearRecursive(x->left);
-      clearRecursive(x->right);
-      delete static_cast< Node< Key, Value >*>(x);
-
+    clearRecursive(x->left);
+    clearRecursive(x->right);
+    delete static_cast<Node< Key, Value >*>(x);
   }
 
   template< class Key, class Value, class Compare>
-  RBTree< Key, Value, Compare >::RBTree() :
+  RBTree< Key, Value, Compare >::RBTree():
     header_(NodeBase(Color::RED)),
     nil_(NodeBase(Color::BLACK)),
     size_(0)
@@ -343,7 +377,7 @@ namespace zinoviev
   }
 
   template< class Key, class Value, class Compare >
-  RBTree< Key, Value, Compare >::RBTree(const RBTree& other) :
+  RBTree< Key, Value, Compare >::RBTree(const RBTree& other):
     header_(NodeBase(Color::RED)),
     nil_(NodeBase(Color::BLACK)),
     comp_(other.comp_),
@@ -361,7 +395,7 @@ namespace zinoviev
 
   template< class Key, class Value, class Compare >
   RBTree< Key, Value, Compare >&
-    RBTree< Key, Value, Compare >::operator=(const RBTree& other)
+  RBTree< Key, Value, Compare >::operator=(const RBTree& other)
   {
     if (this != &other)
     {
@@ -391,7 +425,7 @@ namespace zinoviev
 
   template< class Key, class Value, class Compare >
   std::pair< Iterator< Key, Value >, bool >
-    RBTree< Key, Value, Compare >::insert(const Key& key, const Value& value)
+  RBTree< Key, Value, Compare >::insert(const Key& key, const Value& value)
   {
     NodeBase* place = header_.parent;
     NodeBase* father = &header_;
@@ -402,9 +436,13 @@ namespace zinoviev
 
       const Key& curr_key = (static_cast<Node< Key, Value >*>(place))->node.first;
       if (comp_(key, curr_key))
+      {
         place = place->left;
+      }
       else
+      {
         place = place->right;
+      }
     }
 
     if (father != &header_)
@@ -443,13 +481,17 @@ namespace zinoviev
       {
         father->left = node;
         if (father == header_.left)
+        {
           header_.left = node;
+        }
       }
       else
       {
         father->right = node;
         if (father == header_.right)
+        {
           header_.right = node;
+        }
       }
     }
 
@@ -464,9 +506,13 @@ namespace zinoviev
     NodeBase* node = findNodeBase(key);
 
     if (node != &nil_)
+    {
       return Iterator<Key, Value>(node);
+    }
     else
+    {
       return end();
+    }
   }
 
   template< class Key, class Value, class Compare >
@@ -477,11 +523,17 @@ namespace zinoviev
     {
       const Key& curr = static_cast<Node<Key, Value>*>(node)->node.first;
       if (!comp_(key, curr) && !comp_(curr, key))
+      {
         return CIterator<Key, Value>(node);
+      }
       else if (comp_(key, curr))
+      {
         node = node->left;
+      }
       else
+      {
         node = node->right;
+      }
     }
     return cend();
   }
@@ -492,7 +544,9 @@ namespace zinoviev
     NodeBase* del = findNodeBase(key);
 
     if (del == &nil_)
+    {
       return;
+    }
     Color del_color = del->color;
 
     NodeBase* balance = &nil_;
@@ -539,12 +593,16 @@ namespace zinoviev
 
       NodeBase* max = header_.parent;
       while (max->right != &nil_)
+      {
         max = max->right;
+      }
       header_.right = max;
     }
 
     if (del_color == Color::BLACK)
+    {
       eraseFixup(balance);
+    }
   }
 
   template< class Key, class Value, class Compare >
@@ -591,16 +649,24 @@ namespace zinoviev
     }
 
     if (header_.left == &other.header_)
+    {
       header_.left = &header_;
+    }
 
     if (header_.right == &other.header_)
+    {
       header_.right = &header_;
+    }
 
     if (other.header_.left == &header_)
+    {
       other.header_.left = &other.header_;
+    }
 
     if (other.header_.right == &header_)
+    {
       other.header_.right = &other.header_;
+    }
 
     if (header_.parent != &nil_)
     {
@@ -639,6 +705,7 @@ namespace zinoviev
   {
     return CIterator< Key, Value >(const_cast<NodeBase*>(&header_));
   }
+
 }
 
 #endif

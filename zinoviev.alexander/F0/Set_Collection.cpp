@@ -1,15 +1,26 @@
 #include "Set_Collection.hpp"
 
+#include <memory>
+#include <cctype>
+
 namespace zinoviev
 {
   void SetCollection::addSet(const std::string& name, const Vector< size_t >& ids)
   {
     auto it = sets_.insert(name, ids);
-
     if (!it.second)
     {
-      sets_.erase(name);
-      sets_.insert(name, ids);
+      Vector< size_t > old_ids = it.first->second;
+      try
+      {
+        sets_.erase(name);
+        sets_.insert(name, ids);
+      }
+      catch (...)
+      {
+        sets_.insert(name, old_ids);
+        throw;
+      }
     }
   }
 
@@ -22,8 +33,9 @@ namespace zinoviev
   {
     auto it = sets_.find(name);
     if (it != sets_.cend())
-      return &(it->second);
-
+    {
+      return std::addressof(it->second);
+    }
     return nullptr;
   }
 
@@ -35,45 +47,64 @@ namespace zinoviev
   std::istream& SetCollection::loadFromStream(std::istream& in)
   {
     std::string line;
+    SetCollection tmp;
+
     while (std::getline(in, line))
     {
       if (line.empty())
+      {
         continue;
+      }
 
       size_t pos = 0;
       while (pos < line.size() && line[pos] == ' ')
+      {
         ++pos;
+      }
 
       if (pos == line.size())
+      {
         continue;
+      }
 
       size_t start = pos;
       while (pos < line.size() && line[pos] != ' ')
+      {
         ++pos;
+      }
 
       std::string name = line.substr(start, pos - start);
-
       Vector< size_t > ids;
+
       while (pos < line.size())
       {
         while (pos < line.size() && line[pos] == ' ')
+        {
           ++pos;
+        }
 
         if (pos == line.size())
+        {
           break;
+        }
 
         size_t num_start = pos;
-        while (pos < line.size() && std::isdigit(line[pos]))
+        while (pos < line.size() && std::isdigit(static_cast<unsigned char>(line[pos])))
+        {
           ++pos;
+        }
 
         std::string num_str = line.substr(num_start, pos - num_start);
         ids.push_back(std::stoull(num_str));
       }
 
       if (!ids.empty())
-        addSet(name, ids);
+      {
+        tmp.addSet(name, ids);
+      }
     }
 
+    this->sets_.swap(tmp.sets_);
     return in;
   }
 
@@ -91,23 +122,24 @@ namespace zinoviev
     }
   }
 
-  CIterator< std::string, Vector< size_t > > SetCollection::cbegin() const
+  CIterator< std::string, Vector< size_t > > SetCollection::cbegin() const noexcept
   {
     return sets_.cbegin();
   }
 
-  CIterator< std::string, Vector< size_t > > SetCollection::cend() const
+  CIterator< std::string, Vector< size_t > > SetCollection::cend() const noexcept
   {
     return sets_.cend();
   }
 
-  Iterator< std::string, Vector< size_t > > SetCollection::begin()
+  Iterator< std::string, Vector< size_t > > SetCollection::begin() noexcept
   {
     return sets_.begin();
   }
 
-  Iterator< std::string, Vector< size_t > > SetCollection::end()
+  Iterator< std::string, Vector< size_t > > SetCollection::end() noexcept
   {
     return sets_.end();
   }
+
 }

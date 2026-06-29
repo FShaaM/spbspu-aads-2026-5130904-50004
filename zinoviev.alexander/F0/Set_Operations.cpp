@@ -1,17 +1,20 @@
+#include "Set_Operations.hpp"
+
 #include <iostream>
 #include <string>
-#include "Set_Operations.hpp"
+
 #include "Collection.hpp"
 #include "Vector.hpp"
 
 namespace zinoviev
 {
-
   std::istream& assemble_set_by_id(std::istream& input, std::ostream& out,
-    const RBTree< size_t, Card >& catalog, SetCollection& sets)
+      const RBTree< size_t, Card >& catalog, SetCollection& sets)
   {
     if (!input)
+    {
       return input;
+    }
 
     std::string name;
     if (!(input >> name) || sets.hasSet(name))
@@ -25,21 +28,29 @@ namespace zinoviev
     while (input >> id)
     {
       if (catalog.find(id) != catalog.cend())
+      {
         v_id.push_back(id);
+      }
       else
+      {
         out << "Card with ID " << id << " not found in the global catalog\n";
+      }
     }
 
     if (!v_id.empty())
+    {
       sets.addSet(name, v_id);
+    }
     else
+    {
       out << "Сouldn't collect cards into the set\n";
+    }
 
     return input;
   }
 
   std::istream& assemble_set_by_type(std::istream& input, std::ostream& out,
-    const RBTree< size_t, Card >& catalog, SetCollection& sets)
+      const RBTree< size_t, Card >& catalog, SetCollection& sets)
   {
     std::string name, type;
     if (!(input >> name) || sets.hasSet(name))
@@ -58,20 +69,26 @@ namespace zinoviev
     for (auto it = catalog.cbegin(); it != catalog.cend(); ++it)
     {
       if (it->second.type == type)
+      {
         v_id.push_back(it->second.id);
+      }
     }
 
     if (!v_id.empty())
+    {
       sets.addSet(name, v_id);
+    }
     else
+    {
       out << "Cards with TYPE " << type << " not found in the global catalog\n";
+    }
 
     return input;
   }
 
   void upgradeSet(const std::string& setName, size_t budget, const std::string& criterion,
-    const Collection& collection, const RBTree< size_t, Card >& catalog,
-    const SetCollection& sets, std::ostream& out)
+      const Collection& collection, const RBTree< size_t, Card >& catalog,
+      const SetCollection& sets, std::ostream& out)
   {
     const Vector< size_t >* set_ids = sets.getSet(setName);
     if (!set_ids)
@@ -88,7 +105,9 @@ namespace zinoviev
       {
         auto card = catalog.find(id);
         if (card != catalog.cend())
+        {
           missingCards.insert(card->first, card->second);
+        }
       }
     }
 
@@ -118,7 +137,7 @@ namespace zinoviev
       {
         size_t val = (criterion == "rarity") ? card->second.rarity : card->second.power;
         out << "   " << card->second.name << " (price=" << card->second.price
-          << ", " << criterion << "=" << val << ")\n";
+            << ", " << criterion << "=" << val << ")\n";
         totalCost += card->second.price;
       }
     }
@@ -126,8 +145,8 @@ namespace zinoviev
   }
 
   void completableSets(size_t budget, const std::string& criterion,
-    const Collection& collection, const RBTree< size_t, Card >& catalog,
-    const SetCollection& sets, std::ostream& out)
+      const Collection& collection, const RBTree< size_t, Card >& catalog,
+      const SetCollection& sets, std::ostream& out)
   {
     Vector< std::string > names;
     Vector< size_t > costs;
@@ -151,7 +170,9 @@ namespace zinoviev
         {
           totalPower += (criterion == "rarity") ? card->second.rarity : card->second.power;
           if (collection.findCard(id) == nullptr)
+          {
             missingCost += card->second.price;
+          }
         }
         else
         {
@@ -161,7 +182,9 @@ namespace zinoviev
       }
 
       if (!valid || missingCost > budget)
+      {
         continue;
+      }
 
       names.push_back(name_set);
       costs.push_back(missingCost);
@@ -181,15 +204,17 @@ namespace zinoviev
 
     out << "Completable sets (budget=" << budget << ", criterion=" << criterion << "):\n";
     for (size_t i = 0; i < names.size(); ++i)
+    {
       out << "  " << names[i] << ": cost=" << costs[i] << ", total " << criterion << "=" << powers[i] << "\n";
+    }
     out << "Strongest completable set: " << bestSet << " (total " << criterion << "=" << bestPower << ")\n";
   }
 
   void minCostForSets(const Vector< std::string >& setNames,
-    const Collection& collection, const RBTree< size_t, Card >& catalog,
-    const SetCollection& sets, std::ostream& out)
+      const Collection& collection, const RBTree< size_t, Card >& catalog,
+      const SetCollection& sets, std::ostream& out)
   {
-    Vector< size_t > missingIds;
+    RBTree< size_t, bool > uniqueIds;
 
     for (size_t s = 0; s < setNames.size(); ++s)
     {
@@ -205,25 +230,21 @@ namespace zinoviev
         size_t id = (*ids)[i];
         if (collection.findCard(id) == nullptr)
         {
-          bool already = false;
-          for (size_t j = 0; j < missingIds.size(); ++j)
-          {
-            if (missingIds[j] == id)
-            {
-              already = true;
-              break;
-            }
-          }
-          if (!already)
-            missingIds.push_back(id);
+          uniqueIds.insert(id, true);
         }
       }
     }
 
-    if (missingIds.empty())
+    if (uniqueIds.empty())
     {
       out << "All sets already completed, no cost\n";
       return;
+    }
+
+    Vector< size_t > missingIds;
+    for (auto it = uniqueIds.cbegin(); it != uniqueIds.cend(); ++it)
+    {
+      missingIds.push_back(it->first);
     }
 
     size_t totalCost = 0;
@@ -231,7 +252,9 @@ namespace zinoviev
     {
       auto card = catalog.find(missingIds[i]);
       if (card != catalog.cend())
+      {
         totalCost += card->second.price;
+      }
     }
 
     out << "Minimum cost to complete all given sets: " << totalCost << "\n";
@@ -240,14 +263,16 @@ namespace zinoviev
     {
       auto card = catalog.find(missingIds[i]);
       if (card != catalog.cend())
+      {
         out << card->second.name << " (price=" << card->second.price << ") ";
+      }
     }
     out << "\n";
   }
 
   void maxSets(size_t budget, const std::string& mode,
-    const Collection& collection, const RBTree< size_t, Card >& catalog,
-    const SetCollection& sets, std::ostream& out)
+      const Collection& collection, const RBTree< size_t, Card >& catalog,
+      const SetCollection& sets, std::ostream& out)
   {
     Vector< std::string > names;
     Vector< size_t > costs;
@@ -267,7 +292,9 @@ namespace zinoviev
         {
           auto card = catalog.find(id);
           if (card != catalog.cend())
+          {
             cost += card->second.price;
+          }
           else
           {
             canComplete = false;
@@ -276,18 +303,24 @@ namespace zinoviev
         }
       }
       if (!canComplete || cost > budget)
+      {
         continue;
+      }
 
       size_t value = 0;
       if (mode == "count")
+      {
         value = 1;
+      }
       else if (mode == "rarity")
       {
         for (size_t i = 0; i < ids.size(); ++i)
         {
           auto card = catalog.find(ids[i]);
           if (card != catalog.cend())
+          {
             value += card->second.rarity;
+          }
         }
       }
       else if (mode == "power")
@@ -296,7 +329,9 @@ namespace zinoviev
         {
           auto card = catalog.find(ids[i]);
           if (card != catalog.cend())
+          {
             value += card->second.power;
+          }
         }
       }
       else
@@ -347,12 +382,14 @@ namespace zinoviev
 
     out << "Selected sets (mode=" << mode << ", total value=" << dp[budget] << "):\n";
     for (size_t i = 0; i < selected.size(); ++i)
+    {
       out << "  " << selected[i] << "\n";
+    }
   }
 
   void checkSet(const std::string& setName, const Collection& collection,
-    const RBTree< size_t, Card >& catalog, const SetCollection& sets,
-    std::ostream& out)
+      const RBTree< size_t, Card >& catalog, const SetCollection& sets,
+      std::ostream& out)
   {
     const Vector< size_t >* ids = sets.getSet(setName);
     if (!ids)
@@ -365,7 +402,9 @@ namespace zinoviev
     {
       size_t id = (*ids)[i];
       if (collection.findCard(id) == nullptr)
+      {
         missing.push_back(id);
+      }
     }
     if (missing.empty())
     {
@@ -379,11 +418,16 @@ namespace zinoviev
         size_t id = missing[i];
         auto card = catalog.find(id);
         if (card != catalog.cend())
+        {
           out << card->second.name << " (id=" << id << ") ";
+        }
         else
+        {
           out << id << " ";
+        }
       }
       out << std::endl;
     }
   }
+
 }
